@@ -6,6 +6,25 @@ A React + TypeScript e-commerce app where users can:
 - add/remove cart items
 - filter and sort with URL-based state
 
+## Screenshot/Demo:
+
+
+![Demo Video](/public/assets/Screencast_from_2026-05-12_23-28-27.webm)
+
+![Mobile: Demo Video](/public/assets/Screencast%20from%202026-05-12%2023-39-03.webm)
+
+![Playwright test case](/public/assets/playwright.png.png)
+
+## UI Screenshots
+
+| Page | Desktop | Mobile |
+|------|---------|--------|
+| **Homepage** | ![Desktop Homepage](/public/assets/desktop_homepage.png) | ![Mobile Homepage](/public/assets/mobile_Homepage.png) |
+| **Product Detail** | ![Desktop Product Page](/public/assets/desktop_product_page.png) | ![Mobile Product Page](/public/assets/mobile_products_page.png) |
+| **Shopping Cart** | ![Desktop Cart Page](/public/assets/desktop_cartpage.png) | ![Mobile Cart Page](/public/assets/mobile_cartpage.png) |
+
+
+
 ## Tech Stack
 - React 19
 - TypeScript

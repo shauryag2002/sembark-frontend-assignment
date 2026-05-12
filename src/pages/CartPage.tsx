@@ -33,63 +33,67 @@ export function CartPage() {
             {state.items.map((item) => (
               <div
                 key={item.product.id}
-                className="flex gap-4 rounded-lg border border-gray-200 p-4 bg-white"
+                className="rounded-lg border border-gray-200 bg-white p-4"
               >
-                {/* Product Image */}
-                <div className="flex-shrink-0 w-20 h-20 bg-gray-100 rounded-lg overflow-hidden">
-                  {item.product.images && item.product.images.length > 0 && (
-                    <img
-                      src={item.product.images[0]}
-                      alt={item.product.title}
-                      className="w-full h-full object-cover"
-                    />
-                  )}
-                </div>
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
+                  <div className="flex min-w-0 flex-1 gap-3 sm:gap-4">
+                    {/* Product Image */}
+                    <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg bg-gray-100 sm:h-20 sm:w-20">
+                      {item.product.images && item.product.images.length > 0 && (
+                        <img
+                          src={item.product.images[0]}
+                          alt={item.product.title}
+                          className="h-full w-full object-cover"
+                        />
+                      )}
+                    </div>
 
-                {/* Product Info */}
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold text-gray-900 truncate">
-                    {item.product.title}
-                  </h3>
-                  <p className="text-sm text-gray-500 mb-2">
-                    {item.product.category?.name || 'Uncategorized'}
-                  </p>
-                  <p className="text-lg font-semibold text-gray-900">
-                    ${(item.product.price * item.quantity).toFixed(2)}
-                  </p>
-                  <p className="text-xs text-gray-500 mt-1">
-                    ${item.product.price.toFixed(2)} each
-                  </p>
-                </div>
-
-                {/* Quantity and Actions */}
-                <div className="flex flex-col items-end gap-2">
-                  <div className="flex items-center gap-2 border border-gray-200 rounded-lg">
-                    <button
-                      onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
-                      className="px-2 py-1 text-gray-600 hover:bg-gray-100"
-                      aria-label="Decrease quantity"
-                    >
-                      −
-                    </button>
-                    <span className="px-3 py-1 text-sm font-medium min-w-8 text-center">
-                      {item.quantity}
-                    </span>
-                    <button
-                      onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
-                      className="px-2 py-1 text-gray-600 hover:bg-gray-100"
-                      aria-label="Increase quantity"
-                    >
-                      +
-                    </button>
+                    {/* Product Info */}
+                    <div className="min-w-0 flex-1">
+                      <h3 className="font-semibold text-gray-900 break-words">
+                        {item.product.title}
+                      </h3>
+                      <p className="mb-2 text-sm text-gray-500">
+                        {item.product.category?.name || 'Uncategorized'}
+                      </p>
+                      <p className="text-base font-semibold text-gray-900 sm:text-lg">
+                        ${(item.product.price * item.quantity).toFixed(2)}
+                      </p>
+                      <p className="mt-1 text-xs text-gray-500">
+                        ${item.product.price.toFixed(2)} each
+                      </p>
+                    </div>
                   </div>
 
-                  <button
-                    onClick={() => removeFromCart(item.product.id)}
-                    className="text-sm text-red-600 hover:text-red-700 font-medium"
-                  >
-                    Remove
-                  </button>
+                  {/* Quantity and Actions */}
+                  <div className="flex items-center justify-between gap-3 sm:flex-col sm:items-end sm:justify-start">
+                    <div className="flex items-center gap-2 rounded-lg border border-gray-200">
+                      <button
+                        onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
+                        className="px-2 py-1 text-gray-600 hover:bg-gray-100"
+                        aria-label="Decrease quantity"
+                      >
+                        −
+                      </button>
+                      <span className="min-w-8 px-3 py-1 text-center text-sm font-medium">
+                        {item.quantity}
+                      </span>
+                      <button
+                        onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
+                        className="px-2 py-1 text-gray-600 hover:bg-gray-100"
+                        aria-label="Increase quantity"
+                      >
+                        +
+                      </button>
+                    </div>
+
+                    <button
+                      onClick={() => removeFromCart(item.product.id)}
+                      className="text-sm font-medium text-red-600 hover:text-red-700"
+                    >
+                      Remove
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
@@ -98,7 +102,7 @@ export function CartPage() {
 
         {/* Order Summary */}
         <div className="lg:col-span-1">
-          <div className="sticky top-20 rounded-lg border border-gray-200 bg-white p-6">
+          <div className="rounded-lg border border-gray-200 bg-white p-5 sm:p-6 lg:sticky lg:top-20">
             <h2 className="text-lg font-semibold mb-4">Order Summary</h2>
 
             <div className="space-y-3 mb-4 pb-4 border-b border-gray-200">
