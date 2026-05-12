@@ -122,9 +122,9 @@ export function ProductDetailPage() {
 
           {/* Quantity Selector */}
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-900 mb-2">
-              Quantity
-            </label>
+              <label htmlFor="quantity" className="block text-sm font-medium text-gray-900 mb-2">
+                Quantity
+              </label>
             <div className="flex items-center gap-2 border border-gray-300 rounded-lg w-fit">
               <button
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
@@ -133,9 +133,10 @@ export function ProductDetailPage() {
               >
                 −
               </button>
-              <input
-                type="number"
-                value={quantity}
+                <input
+                  id="quantity"
+                  type="number"
+                  value={quantity}
                 onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
                 className="w-16 text-center py-2 border-l border-r border-gray-300 font-medium"
                 min="1"

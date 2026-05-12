@@ -59,10 +59,14 @@ export function FilterPanel({
       <div className="space-y-6">
         {/* Sorting Section */}
         <div>
-          <h4 className="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-600">
+          <label
+            htmlFor="product-sort"
+            className="mb-3 block text-xs font-semibold uppercase tracking-wide text-gray-600"
+          >
             Sort By
-          </h4>
+          </label>
           <select
+            id="product-sort"
             value={sort || ''}
             onChange={(e) => onSortChange(e.target.value ? (e.target.value as SortOption) : undefined)}
             className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-gray-900 focus:outline-none"
@@ -124,4 +128,3 @@ export function FilterPanel({
     </div>
   )
 }
-

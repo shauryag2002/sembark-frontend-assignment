@@ -5,20 +5,12 @@ import { HomePage } from './pages/HomePage'
 import { NotFoundPage } from './pages/NotFoundPage'
 import { ProductDetailPage } from './pages/ProductDetailPage'
 
-function RootLayout() {
-  return <Layout />
-}
-
-function AppRoot() {
-  return <Outlet />
-}
-
 export const router = createBrowserRouter([
   {
-    element: <AppRoot />,
+    element: <Outlet />,
     children: [
       {
-        element: <RootLayout />,
+        element: <Layout />,
         children: [
           {
             index: true,

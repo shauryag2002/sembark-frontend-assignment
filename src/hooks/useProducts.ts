@@ -17,15 +17,20 @@ interface InfiniteState {
 }
 
 const PAGE_SIZE = 12
-
-export function useProducts(filters?: FilterParams) {
-  const [state, setState] = useState<InfiniteState>({
+function createInitialInfiniteState(): InfiniteState {
+  return {
     products: [],
     loading: true,
     error: null,
     hasMore: true,
     isLoadingMore: false,
-  })
+  }
+}
+
+const INITIAL_INFINITE_STATE = createInitialInfiniteState()
+
+export function useProducts(filters?: FilterParams) {
+  const [state, setState] = useState<InfiniteState>(INITIAL_INFINITE_STATE)
 
   const controllerRef = useRef<AbortController | null>(null)
   const offsetRef = useRef(0)
@@ -44,68 +49,92 @@ export function useProducts(filters?: FilterParams) {
     [categoryIdsKey, filters?.priceMin, filters?.priceMax, filters?.title, filters?.sort]
   )
 
-  const loadMoreProducts = useCallback(async () => {
-    if (isLoadingMoreRef.current || !hasMoreRef.current) return
-
-    try {
-      // Abort previous request if still pending.
-      controllerRef.current?.abort()
-      const controller = new AbortController()
-      controllerRef.current = controller
-      isLoadingMoreRef.current = true
-
-      setState((prev) => ({ ...prev, isLoadingMore: true, error: null }))
-
-      const newFilters: FilterParams = {
-        ...normalizedFilters,
-        limit: PAGE_SIZE,
-        offset: offsetRef.current,
-      }
-
-      const newProducts = await productApi.getProducts(newFilters)
-
-      if (!controller.signal.aborted) {
-        const hasMore = newProducts.length >= PAGE_SIZE
-        hasMoreRef.current = hasMore
-        offsetRef.current += PAGE_SIZE
-        isLoadingMoreRef.current = false
-
-        setState((prev) => ({
-          ...prev,
-          products: [...prev.products, ...newProducts],
-          loading: false,
-          isLoadingMore: false,
-          hasMore,
-        }))
-      }
-    } catch (error) {
-      if (!(error instanceof DOMException && error.name === 'AbortError')) {
-        isLoadingMoreRef.current = false
-        setState((prev) => ({
-          ...prev,
-          isLoadingMore: false,
-          loading: false,
-          error: error instanceof Error ? error : new Error('Failed to load products'),
-        }))
-      }
-    }
-  }, [normalizedFilters])
-
-  // Reset pagination when filters/sort change
-  useEffect(() => {
+  const resetPaginationRefs = useCallback(() => {
     controllerRef.current?.abort()
     offsetRef.current = 0
     hasMoreRef.current = true
     isLoadingMoreRef.current = false
-    setState({
-      products: [],
-      loading: true,
-      error: null,
-      hasMore: true,
+  }, [])
+
+  const startNextRequest = useCallback(() => {
+    // We cancel the previous request so stale responses cannot overwrite fresh data.
+    controllerRef.current?.abort()
+    const requestController = new AbortController()
+    controllerRef.current = requestController
+    isLoadingMoreRef.current = true
+    const isFirstPageRequest = offsetRef.current === 0
+
+    setState((currentState) =>
+      isFirstPageRequest
+        ? { ...createInitialInfiniteState(), isLoadingMore: true }
+        : { ...currentState, isLoadingMore: true, error: null }
+    )
+    return requestController
+  }, [])
+
+  const buildNextRequestFilters = useCallback(
+    (): FilterParams => ({
+      ...normalizedFilters,
+      limit: PAGE_SIZE,
+      offset: offsetRef.current,
+    }),
+    [normalizedFilters]
+  )
+
+  const appendProducts = useCallback((nextProducts: Product[]) => {
+    const hasMoreProducts = nextProducts.length >= PAGE_SIZE
+    hasMoreRef.current = hasMoreProducts
+    offsetRef.current += PAGE_SIZE
+    isLoadingMoreRef.current = false
+
+    setState((currentState) => ({
+      ...currentState,
+      products: [...currentState.products, ...nextProducts],
+      loading: false,
       isLoadingMore: false,
-    })
-    void loadMoreProducts()
-  }, [loadMoreProducts])
+      hasMore: hasMoreProducts,
+    }))
+  }, [])
+
+  const handleLoadMoreError = useCallback((error: unknown) => {
+    isLoadingMoreRef.current = false
+    setState((currentState) => ({
+      ...currentState,
+      isLoadingMore: false,
+      loading: false,
+      error: error instanceof Error ? error : new Error('Failed to load products'),
+    }))
+  }, [])
+
+  const loadMoreProducts = useCallback(async () => {
+    if (isLoadingMoreRef.current || !hasMoreRef.current) return
+
+    try {
+      const requestController = startNextRequest()
+      const requestFilters = buildNextRequestFilters()
+      const nextProducts = await productApi.getProducts(requestFilters)
+
+      if (!requestController.signal.aborted) {
+        appendProducts(nextProducts)
+      }
+    } catch (error) {
+      if (!(error instanceof DOMException && error.name === 'AbortError')) {
+        handleLoadMoreError(error)
+      }
+    }
+  }, [appendProducts, buildNextRequestFilters, handleLoadMoreError, startNextRequest])
+
+  // Filter/sort updates should start fresh from page 1.
+  useEffect(() => {
+    resetPaginationRefs()
+    const loadTimer = window.setTimeout(() => {
+      void loadMoreProducts()
+    }, 0)
+
+    return () => {
+      window.clearTimeout(loadTimer)
+    }
+  }, [loadMoreProducts, resetPaginationRefs])
 
   useEffect(() => {
     return () => {

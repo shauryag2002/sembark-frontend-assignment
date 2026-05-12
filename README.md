@@ -1,75 +1,117 @@
-# React + TypeScript + Vite
+# E-commerce Frontend Assignment
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A React + TypeScript e-commerce app where users can:
+- browse products
+- open product detail pages
+- add/remove cart items
+- filter and sort with URL-based state
 
-Currently, two official plugins are available:
+## Tech Stack
+- React 19
+- TypeScript
+- React Router
+- Context API (cart state)
+- Tailwind CSS
+- Playwright (E2E)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Setup
 
-## React Compiler
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
+2. Create `.env` in project root:
+   ```env
+   VITE_APP_BASE_URL=https://api.escuelajs.co/api/v1
+   ```
+3. Start dev server:
+   ```bash
+   npm run dev
+   ```
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+## Available Scripts
 
-Note: This will impact Vite dev & build performances.
+| Command | Purpose |
+|---|---|
+| `npm run dev` | Run app locally |
+| `npm run build` | Type-check + production build |
+| `npm run preview` | Preview production build |
+| `npm run lint` | Run ESLint |
+| `npm run test:e2e` | Run Playwright tests |
+| `npm run test:e2e:ui` | Run Playwright UI mode |
 
-## Expanding the ESLint configuration
+## E2E Testing (Playwright)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+1. Install Playwright browser:
+   ```bash
+   npx playwright install chromium
+   ```
+2. Run tests:
+   ```bash
+   npm run test:e2e
+   ```
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+Current E2E coverage includes:
+- product listing to product detail to cart flow
+- sort query persistence after refresh
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Feature Checklist (Requirement Mapping)
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+### 1) Home Page (Product Listing)
+- Product grid with name, price, image, and detail link
+- Multi-category filter + price range + sorting
+- Filters/sort stored in URL query params (`categoryIds`, `priceMin`, `priceMax`, `sort`)
+- Query-param state survives refresh, back/forward, and shareable links
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 2) Product Detail Page
+- Dynamic route: `/product/:id`
+- Product data fetched by id
+- Title, description, price, image, quantity selector, and Add to Cart button
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### 3) Cart Functionality
+- Add from product detail page
+- Remove items from cart page
+- Update quantity in cart page
+- Cart total shown in order summary
+- Cart item count shown in header badge
+- Cart persisted in `localStorage` (bonus)
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+### 4) Navigation
+- Header navigation: Home and Cart
+- Back-to-home link from product detail page
+- 404 route handling for unknown routes
+
+### 5) Technical Requirements
+- Built with TypeScript + React
+- Uses React Router for navigation
+- Uses Context API for cart state
+- Uses API for products, product details, and categories
+- Filters trigger API requests (no local category filtering)
+- Mobile responsive layout (drawer filters on mobile, sidebar on desktop)
+- E2E setup added using Playwright
+
+## Project Flow (Simple Overview)
+
+1. `src/App.tsx` defines route tree.
+2. `src/components/Layout.tsx` handles shared header/navigation and route outlet.
+3. `src/pages/HomePage.tsx` renders listing + filter UI.
+4. `src/hooks/useUrlFilters.ts` keeps filter/sort state synced with URL.
+5. `src/hooks/useProducts.ts` handles paginated product fetching/infinite scroll.
+6. `src/pages/ProductDetailPage.tsx` fetches product by URL `id`.
+7. `src/context/CartContext.tsx` manages cart state/actions + localStorage persistence.
+8. `src/pages/CartPage.tsx` shows cart items, totals, and remove/update actions.
+
+## Assumptions
+- API base URL is provided through `VITE_APP_BASE_URL`.
+- Product sorting options are applied client-side after API fetch.
+- Cart checkout is UI-only (no payment/order backend integration).
+
+## Limitations
+- Playwright tests are smoke tests, not full behavioral coverage.
+- Product images/descriptions depend on external API quality.
+
+## Additional Implemented Features
+- Infinite scrolling on listing page
+- Desktop filter panel scroll support
+- Dual-thumb price range slider
+- localStorage caching for API responses and cart state
