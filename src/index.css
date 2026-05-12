@@ -1,3 +1,30 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.range-slider input[type='range'] {
+  pointer-events: none;
+}
+
+.range-slider input[type='range']::-webkit-slider-thumb {
+  appearance: none;
+  height: 16px;
+  width: 16px;
+  border-radius: 9999px;
+  background: #111827;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 0 1px #111827;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.range-slider input[type='range']::-moz-range-thumb {
+  height: 16px;
+  width: 16px;
+  border-radius: 9999px;
+  background: #111827;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 0 1px #111827;
+  pointer-events: auto;
+  cursor: pointer;
+}

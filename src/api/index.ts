@@ -4,6 +4,18 @@ import { cacheManager } from '../utils/cache'
 
 const CATEGORIES_CACHE_KEY = 'categories'
 const PRODUCT_CACHE_KEY = 'product_'
+const PRODUCTS_CACHE_KEY = 'products_'
+
+function buildProductsCacheKey(filters?: FilterParams): string {
+  if (!filters) return `${PRODUCTS_CACHE_KEY}default`
+
+  const normalized = {
+    ...filters,
+    categoryIds: filters.categoryIds ? [...filters.categoryIds].sort((a, b) => a - b) : undefined,
+  }
+
+  return `${PRODUCTS_CACHE_KEY}${JSON.stringify(normalized)}`
+}
 
 function applySorting(products: Product[], sort?: string): Product[] {
   if (!sort) return products
@@ -30,7 +42,11 @@ function applySorting(products: Product[], sort?: string): Product[] {
 
 export const productApi = {
   async getProducts(filters?: FilterParams): Promise<Product[]> {
-    const params: Record<string, any> = {
+    const cacheKey = buildProductsCacheKey(filters)
+    const cached = cacheManager.get<Product[]>(cacheKey)
+    if (cached) return cached
+
+    const params: Record<string, string | number | boolean> = {
       limit: filters?.limit || 12,
       offset: filters?.offset || 0,
     }
@@ -67,12 +83,16 @@ export const productApi = {
         }
       }
 
-      return applySorting(allProducts, filters?.sort)
+      const sortedProducts = applySorting(allProducts, filters?.sort)
+      cacheManager.set(cacheKey, sortedProducts)
+      return sortedProducts
     }
 
     // No category filter, fetch all products with pagination
     const products = await apiClient.get<Product[]>('/products', params)
-    return applySorting(products, filters?.sort)
+    const sortedProducts = applySorting(products, filters?.sort)
+    cacheManager.set(cacheKey, sortedProducts)
+    return sortedProducts
   },
 
   async getProduct(id: string | number): Promise<Product> {
@@ -94,4 +114,3 @@ export const productApi = {
     return categories
   },
 }
-

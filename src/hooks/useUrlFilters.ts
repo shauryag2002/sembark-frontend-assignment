@@ -19,29 +19,37 @@ export function useUrlFilters() {
 
   const updateFilters = (newFilters: Partial<FilterParams>) => {
     const params = new URLSearchParams(searchParams)
-    
-    if (newFilters.categoryIds && newFilters.categoryIds.length > 0) {
-      params.set('categoryIds', newFilters.categoryIds.join(','))
-    } else {
-      params.delete('categoryIds')
-    }
-    
-    if (newFilters.priceMin !== undefined && newFilters.priceMin > 0) {
-      params.set('priceMin', String(newFilters.priceMin))
-    } else {
-      params.delete('priceMin')
-    }
-    
-    if (newFilters.priceMax !== undefined && newFilters.priceMax > 0) {
-      params.set('priceMax', String(newFilters.priceMax))
-    } else {
-      params.delete('priceMax')
+
+    if (Object.hasOwn(newFilters, 'categoryIds')) {
+      if (newFilters.categoryIds && newFilters.categoryIds.length > 0) {
+        params.set('categoryIds', newFilters.categoryIds.join(','))
+      } else {
+        params.delete('categoryIds')
+      }
     }
 
-    if (newFilters.sort) {
-      params.set('sort', newFilters.sort)
-    } else {
-      params.delete('sort')
+    if (Object.hasOwn(newFilters, 'priceMin')) {
+      if (newFilters.priceMin !== undefined && newFilters.priceMin > 0) {
+        params.set('priceMin', String(newFilters.priceMin))
+      } else {
+        params.delete('priceMin')
+      }
+    }
+
+    if (Object.hasOwn(newFilters, 'priceMax')) {
+      if (newFilters.priceMax !== undefined && newFilters.priceMax > 0) {
+        params.set('priceMax', String(newFilters.priceMax))
+      } else {
+        params.delete('priceMax')
+      }
+    }
+
+    if (Object.hasOwn(newFilters, 'sort')) {
+      if (newFilters.sort) {
+        params.set('sort', newFilters.sort)
+      } else {
+        params.delete('sort')
+      }
     }
 
     setSearchParams(params)
@@ -80,5 +88,4 @@ export function useUrlFilters() {
     hasActiveFilters,
   }
 }
-
 

@@ -11,7 +11,7 @@ interface FilterPanelProps {
   priceMax?: number
   onPriceChange: (min?: number, max?: number) => void
   sort?: SortOption
-  onSortChange: (sort: SortOption) => void
+  onSortChange: (sort: SortOption | undefined) => void
 }
 
 const MIN_PRICE = 0
@@ -41,7 +41,7 @@ export function FilterPanel({
   const hasActiveFilters = categoryIds.length > 0 || priceMin || priceMax || sort
 
   return (
-    <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm h-fit">
+    <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm h-fit lg:max-h-[calc(100vh-4rem)] lg:overflow-y-auto">
       <div className="mb-4 flex items-center justify-between gap-3">
         <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-700">
           Filters & Sort
@@ -64,7 +64,7 @@ export function FilterPanel({
           </h4>
           <select
             value={sort || ''}
-            onChange={(e) => onSortChange(e.target.value as SortOption)}
+            onChange={(e) => onSortChange(e.target.value ? (e.target.value as SortOption) : undefined)}
             className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-gray-900 focus:outline-none"
           >
             <option value="">Default</option>
@@ -124,5 +124,4 @@ export function FilterPanel({
     </div>
   )
 }
-
 

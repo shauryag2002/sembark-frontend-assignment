@@ -1,6 +1,6 @@
 
 export const apiClient = {
-  async get<T>(endpoint: string, params?: Record<string, any>): Promise<T> {
+  async get<T>(endpoint: string, params?: Record<string, string | number | boolean>): Promise<T> {
     const url = new URL(`${import.meta.env.VITE_APP_BASE_URL}${endpoint}`)
     
     if (params) {

@@ -22,7 +22,7 @@ export function ProductGrid({ products, hasMore, isLoadingMore, onLoadMore }: Pr
           onLoadMore()
         }
       },
-      { threshold: 0.1 }
+      { threshold: 0.1, rootMargin: '200px 0px' }
     )
 
     const element = loadMoreRef.current
@@ -31,9 +31,8 @@ export function ProductGrid({ products, hasMore, isLoadingMore, onLoadMore }: Pr
     }
 
     return () => {
-      if (element) {
-        observer.unobserve(element)
-      }
+      if (element) observer.unobserve(element)
+      observer.disconnect()
     }
   }, [hasMore, isLoadingMore, onLoadMore])
 

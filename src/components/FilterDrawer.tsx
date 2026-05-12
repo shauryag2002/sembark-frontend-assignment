@@ -13,7 +13,7 @@ interface FilterDrawerProps {
   priceMax?: number
   onPriceChange: (min?: number, max?: number) => void
   sort?: SortOption
-  onSortChange: (sort: SortOption) => void
+  onSortChange: (sort: SortOption | undefined) => void
 }
 
 export function FilterDrawer({
