@@ -8,12 +8,16 @@ A React + TypeScript e-commerce app where users can:
 
 ## Screenshot/Demo:
 
+<video controls width="100%">
+  <source src="./public/assets/desktop_demo.mp4" type="video/mp4">
+</video>
 
-![Demo Video](/public/assets/Screencast_from_2026-05-12_23-28-27.webm)
 
-![Mobile: Demo Video](/public/assets/Screencast%20from%202026-05-12%2023-39-03.webm)
+<video controls width="100%">
+  <source src="./public/assets/mobile_demo.mp4" type="video/mp4">
+</video>
 
-![Playwright test case](/public/assets/playwright.png.png)
+![Playwright test case](/public/assets/playwright.png)
 
 ## UI Screenshots
 
