@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { FilterDrawer } from '../components/FilterDrawer'
 import { FilterPanel } from '../components/FilterPanel'
 import { ProductGrid } from '../components/ProductGrid'
@@ -7,10 +7,21 @@ import { useCategories, useProducts } from '../hooks/useProducts'
 import { useUrlFilters } from '../hooks/useUrlFilters'
 
 export function HomePage() {
-  const { filters, toggleCategory, clearFilters, selectedCategoryId } = useUrlFilters()
+  const { filters, toggleCategory, clearFilters, updatePriceRange, updateSort, categoryIds } = useUrlFilters()
   const { data: categories, loading: categoriesLoading } = useCategories()
-  const { data: products, loading: productsLoading, error: productsError } = useProducts(filters)
+  const { products, loading: productsLoading, error: productsError, hasMore, isLoadingMore, loadMore } = useProducts(filters)
   const [filtersOpen, setFiltersOpen] = useState(false)
+
+  // Auto-close filters on desktop
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) {
+        setFiltersOpen(false)
+      }
+    }
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   return (
     <div>
@@ -30,10 +41,15 @@ export function HomePage() {
           <div className="hidden lg:block">
             <FilterPanel
               categories={categories}
-              selectedCategoryId={selectedCategoryId}
+              categoryIds={categoryIds}
               onToggleCategory={toggleCategory}
               onClearFilters={clearFilters}
               loading={categoriesLoading}
+              priceMin={filters.priceMin}
+              priceMax={filters.priceMax}
+              onPriceChange={updatePriceRange}
+              sort={filters.sort}
+              onSortChange={updateSort}
             />
           </div>
 
@@ -41,10 +57,15 @@ export function HomePage() {
             open={filtersOpen}
             onClose={() => setFiltersOpen(false)}
             categories={categories}
-            selectedCategoryId={selectedCategoryId}
+            categoryIds={categoryIds}
             onToggleCategory={toggleCategory}
             onClearFilters={clearFilters}
             loading={categoriesLoading}
+            priceMin={filters.priceMin}
+            priceMax={filters.priceMax}
+            onPriceChange={updatePriceRange}
+            sort={filters.sort}
+            onSortChange={updateSort}
           />
         </aside>
 
@@ -55,10 +76,15 @@ export function HomePage() {
             </div>
           )}
 
-          {productsLoading ? (
+          {productsLoading && products.length === 0 ? (
             <ProductSkeletonGrid />
-          ) : products && products.length > 0 ? (
-            <ProductGrid products={products} />
+          ) : products.length > 0 ? (
+            <ProductGrid 
+              products={products} 
+              hasMore={hasMore}
+              isLoadingMore={isLoadingMore}
+              onLoadMore={loadMore}
+            />
           ) : (
             <div className="rounded-2xl border border-dashed border-gray-300 bg-white px-6 py-14 text-center text-gray-600">
               No products found

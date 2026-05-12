@@ -29,11 +29,14 @@ export interface Cart {
   total: number
 }
 
+export type SortOption = 'price_asc' | 'price_desc' | 'newest' | 'oldest' | 'title_asc' | 'title_desc'
+
 export interface FilterParams {
-  categoryId?: number
+  categoryIds?: number[]
   priceMin?: number
   priceMax?: number
   title?: string
   limit?: number
   offset?: number
+  sort?: SortOption
 }
